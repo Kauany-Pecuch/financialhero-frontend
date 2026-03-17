@@ -1,0 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap')
+layer(base);
+
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-hero-orange: #ff7a00;
+  --color-hero-orange-light: #ffd6a5;
+  --color-hero-orange-dark: #cc6200;
+  --color-hero-purple: #7803d4;
+  --color-hero-purple-light: #a855f7;
+  --color-hero-purple-dark: #3d1f5e;
+  --color-hero-success: #4caf50;
+  --color-hero-warning: #ffaa00;
+  --color-hero-danger: #ff4444;
+
+  --color-surface-light: #ffffff;
+  --color-surface-dark: #1e1e1e;
+
+  --color-background-light: #f9f9fb;
+  --color-background-dark: #121212;
+
+  --font-sans: Inter, system-ui, sans-serif;
+
+  --background-image-hero-gradient: linear-gradient(
+    135deg,
+    #ff7a00 0%,
+    #7803d4 100%
+  );
+  --background-image-hero-gradient-subtle: linear-gradient(
+    135deg,
+    rgba(255, 122, 0, 0.1) 0%,
+    rgba(120, 3, 212, 0.1) 100%
+  );
+
+  --shadow-hero: 0 4px 20px rgba(255, 122, 0, 0.15);
+  --shadow-hero-lg: 0 8px 32px rgba(255, 122, 0, 0.2);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility btn-hero {
+  @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200;
+  background: linear-gradient(135deg, #ff7a00 0%, #cc6200 100%);
+  box-shadow: 0 4px 14px rgba(255, 122, 0, 0.3);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255, 122, 0, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@utility btn-secondary {
+  @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold transition-all duration-200;
+  background: linear-gradient(135deg, #7803d4 0%, #3d1f5e 100%);
+  color: white;
+  box-shadow: 0 4px 14px rgba(120, 3, 212, 0.3);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(120, 3, 212, 0.4);
+  }
+}
+
+@utility btn-outline {
+  @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold border-2 border-hero-orange text-hero-orange bg-transparent transition-all duration-200;
+
+  &:hover {
+    @apply bg-hero-orange text-white;
+  }
+}
+
+@utility card {
+  /* Card uses CSS vars — automatically adapts to dark mode */
+  @apply rounded-2xl p-6 transition-all duration-200;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@utility gradient-text {
+  background: linear-gradient(135deg, #ff7a00 0%, #7803d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@utility input-field {
+  /* Input uses CSS vars */
+  @apply w-full px-4 py-3 rounded-xl border transition-all duration-200 outline-hidden;
+  background-color: var(--bg-surface);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+
+  &::placeholder {
+    color: var(--text-subtle);
+  }
+
+  &:focus {
+    @apply ring-2 ring-hero-orange/20;
+    border-color: #ff7a00;
+  }
+
+  /* Select uses CSS vars too */
+  &select option {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+  }
+}
+
+@utility sidebar-link {
+  /* Sidebar links use CSS vars */
+  @apply flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200;
+  color: var(--text-muted);
+
+  &:hover {
+    @apply text-hero-orange;
+    background-color: rgba(255, 122, 0, 0.1);
+  }
+
+  &.active {
+    @apply text-hero-orange;
+    background-color: rgba(255, 122, 0, 0.1);
+  }
+}
+
+@utility active {
+  &.sidebar-link {
+    @apply text-hero-orange;
+    background-color: rgba(255, 122, 0, 0.1);
+  }
+}
+
+@utility list-item {
+  /* List item row — used in expense/receipt lists */
+  @apply flex items-center justify-between p-4 rounded-xl transition-colors;
+  background-color: var(--bg-item);
+
+  &:hover {
+    background-color: var(--bg-hover);
+  }
+}
+
+@utility text-primary {
+  color: var(--text-primary);
+}
+
+@utility text-muted {
+  color: var(--text-muted);
+}
+
+@utility text-subtle {
+  color: var(--text-subtle);
+}
+
+@utility bg-surface {
+  background-color: var(--bg-surface);
+}
+
+@utility bg-page {
+  background-color: var(--bg-page);
+}
+
+@utility border-default {
+  border-color: var(--border);
+}
+
+@layer utilities {
+  /* ── CSS Variables (TaskHero palette) ── */
+  :root {
+    --bg-page: #f9f9fb;
+    --bg-surface: #ffffff;
+    --bg-hover: #f3f4f6;
+    --bg-item: #f9fafb;
+    --text-primary: #1c1c1c;
+    --text-muted: #5a5a5a;
+    --text-subtle: #9ca3af;
+    --border: #e5e7eb;
+    --border-strong: #d1d5db;
+  }
+
+  .dark {
+    --bg-page: #121212;
+    --bg-surface: #1e1e1e;
+    --bg-hover: #2a2a2a;
+    --bg-item: #252525;
+    --text-primary: #eaeaea;
+    --text-muted: #b5b5b5;
+    --text-subtle: #6b7280;
+    --border: #2a2a2a;
+    --border-strong: #374151;
+  }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    overflow-x: hidden;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-subtle);
+}
