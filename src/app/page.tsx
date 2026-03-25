@@ -37,6 +37,13 @@ gsap.registerPlugin(ScrollTrigger);
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  // Check if video is already loaded on mount (e.g. cached)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video && video.readyState >= 2) setVideoLoaded(true);
+  }, []);
   const heroRef = useRef<HTMLElement>(null);
   const heroVideoWrapperRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -73,13 +80,76 @@ export default function LandingPage() {
     return () => ctx.revert();
   }, []);
 
-  /* ── Scroll-controlled video ── */
+  /* ── Scroll-controlled video (desktop) / Ping-pong loop (mobile) ── */
   useEffect(() => {
     const video = videoRef.current;
     const wrapper = heroVideoWrapperRef.current;
     if (!video || !wrapper) return;
 
-    // Wait for the video metadata to be loaded
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
+    if (isMobile) {
+      // Mobile: forward via native play (hardware-accelerated),
+      // reverse via throttled RAF at 20fps (far less seek pressure).
+      const SPEED = 1.5;
+      const FRAME_MS = 1000 / 30; // 30fps for reverse seeks
+      let rafId: number;
+      let lastSeek: number | null = null;
+
+      const goForward = () => {
+        video.playbackRate = SPEED;
+        video.play().catch(() => { });
+      };
+
+      const goReverse = () => {
+        video.pause();
+        lastSeek = null;
+
+        const tick = (ts: number) => {
+          if (lastSeek === null) lastSeek = ts;
+          const elapsed = ts - lastSeek;
+
+          if (elapsed >= FRAME_MS) {
+            lastSeek = ts - (elapsed % FRAME_MS);
+            const next = video.currentTime - SPEED * (FRAME_MS / 1000);
+            if (next <= 0) {
+              video.currentTime = 0;
+              cancelAnimationFrame(rafId);
+              goForward();
+              return;
+            }
+            video.currentTime = next;
+          }
+
+          rafId = requestAnimationFrame(tick);
+        };
+
+        rafId = requestAnimationFrame(tick);
+      };
+
+      const handleEnded = () => { cancelAnimationFrame(rafId); goReverse(); };
+
+      const startPingPong = () => {
+        video.currentTime = 0;
+        video.addEventListener("ended", handleEnded);
+        goForward();
+      };
+
+      if (video.readyState >= 1) {
+        startPingPong();
+      } else {
+        video.addEventListener("loadedmetadata", startPingPong, { once: true });
+      }
+
+      return () => {
+        cancelAnimationFrame(rafId);
+        video.pause();
+        video.removeEventListener("ended", handleEnded);
+        video.removeEventListener("loadedmetadata", startPingPong);
+      };
+    }
+
+    // Desktop: scroll-controlled
     const onLoadedMetadata = () => {
       const ctx = gsap.context(() => {
         ScrollTrigger.create({
@@ -87,7 +157,7 @@ export default function LandingPage() {
           start: "top top",
           end: "bottom bottom",
           pin: heroRef.current,
-          scrub: true,
+          scrub: 0.5,
           onUpdate: (self) => {
             if (video.duration) {
               video.currentTime = self.progress * video.duration;
@@ -321,7 +391,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO — Scroll-controlled (mobile + desktop) ── */}
-      <div ref={heroVideoWrapperRef} style={{ height: "300vh", position: "relative", backgroundColor: "rgb(2, 2, 2)" }}>
+      <div ref={heroVideoWrapperRef} className="h-screen md:h-[300vh]" style={{ position: "relative", backgroundColor: "rgb(2, 2, 2)" }}>
         <section
           ref={heroRef}
           className="relative w-full overflow-hidden"
@@ -329,13 +399,19 @@ export default function LandingPage() {
         >
           {/* Vídeo Container Responsivo */}
           <div className="absolute z-0 pointer-events-none flex items-center justify-center inset-x-0 top-[40%] h-[45%] md:inset-y-0 md:left-1/2 md:w-1/2 md:h-full">
+            {!videoLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-hero-orange border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
             <video
               ref={videoRef}
               muted
               playsInline
               preload="auto"
-              className="w-full h-full object-contain max-w-[500px] md:max-w-none"
-              style={{ pointerEvents: "none" }}
+              onLoadedData={() => setVideoLoaded(true)}
+              className="w-full h-full object-contain max-w-[500px] md:max-w-none transition-opacity duration-500"
+              style={{ pointerEvents: "none", opacity: videoLoaded ? 1 : 0 }}
             >
               <source src="/cofre_allkeyframes.mp4" type="video/mp4" />
             </video>
