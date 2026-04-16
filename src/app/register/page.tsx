@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, Eye, EyeOff, User } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import { client } from "@/api";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -31,15 +32,36 @@ export default function RegisterPage() {
       return;
     }
 
+    const nameParts = formData.name.trim().split(/\s+/);
+    const firstName = nameParts.shift() || "";
+    const lastName = nameParts.join(" ");
+
+    if (!firstName || !lastName) {
+      setError("Informe nome e sobrenome completos");
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
-    // TODO: integrar com backend
-    setTimeout(() => {
+    try {
+      const response = await client.register({
+        firstName,
+        lastName,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      client.setAuthToken(response.token);
+      localStorage.setItem("token", response.token);
       localStorage.setItem(
         "user",
         JSON.stringify({ name: formData.name, email: formData.email })
       );
       router.push("/dashboard");
-    }, 800);
+    } catch (err: any) {
+      setError(err.message || "Erro ao registrar. Tente novamente.");
+      setLoading(false);
+    }
   };
 
   return (
