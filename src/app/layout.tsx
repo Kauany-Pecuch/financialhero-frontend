@@ -32,6 +32,8 @@ export const metadata: Metadata = {
     "Organize comprovantes, controle gastos recorrentes e descubra quanto do seu tempo de trabalho está sendo gasto em cada compra. Tudo em um só lugar.",
 };
 
+const themeInitScript = `(function(){try{var s=localStorage.getItem('theme');var t=s==='light'?'light':'dark';if(t==='dark'){document.documentElement.classList.add('dark');}document.documentElement.style.colorScheme=t;}catch(e){document.documentElement.classList.add('dark');}})();`;
+
 export default function RootLayout({
   children,
 }: {
@@ -43,6 +45,9 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${sora.variable} ${instrumentSerif.variable} ${firaCode.variable}`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="min-h-screen">
         <ThemeProvider>{children}</ThemeProvider>
       </body>

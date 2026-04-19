@@ -34,7 +34,7 @@ export default function LoginPage() {
         <div className="absolute top-1/3 left-1/4 w-48 h-48 bg-white/5 rounded-full" />
         <div className="relative z-10 text-center text-white px-12">
           <h2 className="text-4xl font-bold mb-4">Bem-vindo de volta, herói!</h2>
-          <p className="text-lg opacity-90 max-w-md">
+          <p className="text-lg opacity-90 max-w-md mx-auto">
             Continue sua jornada de organização financeira. Seus comprovantes e
             métricas estão esperando por você.
           </p>

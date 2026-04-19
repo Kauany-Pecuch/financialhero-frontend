@@ -72,7 +72,7 @@ export default function RegisterPage() {
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
         <div className="relative z-10 text-center text-white px-12">
           <h2 className="text-4xl font-bold mb-4">Comece sua jornada heroica!</h2>
-          <p className="text-lg opacity-90 max-w-md">
+          <p className="text-lg opacity-90 max-w-md mx-auto">
             Crie sua conta e ganhe superpoderes para organizar suas finanças
             pessoais de forma simples e eficiente.
           </p>

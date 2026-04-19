@@ -51,7 +51,7 @@ export function FeaturesSection() {
       id="features"
       ref={featuresRef}
       className="py-20 sm:py-32 px-4 sm:px-8 lg:px-16"
-      style={{ backgroundColor: "var(--bg-surface)" }}
+      style={{ backgroundColor: "var(--bg-page)" }}
     >
       <div className="w-full">
         <div className="text-center mb-16 sm:mb-20 max-w-3xl mx-auto">
