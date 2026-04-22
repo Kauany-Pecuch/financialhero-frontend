@@ -187,6 +187,7 @@ export function HeroSection() {
                 alt="Ilustração FinancialHero: comprovantes ascendendo como gráfico com raio de superpoder"
                 fill
                 priority
+                fetchPriority="high"
                 sizes="(max-width: 768px) 80vw, 40vw"
                 style={{ objectFit: "contain" }}
                 className="relative drop-shadow-2xl"
