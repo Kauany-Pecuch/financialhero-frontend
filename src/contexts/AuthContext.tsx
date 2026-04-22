@@ -9,26 +9,13 @@ import {
   useMemo,
   useState,
 } from "react";
-import { jwtDecode } from "jwt-decode";
 import {
   authApi,
   authStorage,
   type LoginRequest,
   type RegisterRequest,
 } from "@/api";
-
-interface AuthUser {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  wage: number;
-}
-
-interface JwtPayload extends AuthUser {
-  exp?: number;
-  iat?: number;
-}
+import { decodeToken, type AuthUser } from "./decodeToken";
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -41,22 +28,6 @@ interface AuthContextValue {
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-
-function decodeToken(token: string): AuthUser | null {
-  try {
-    const payload = jwtDecode<JwtPayload>(token);
-    if (payload.exp && payload.exp * 1000 < Date.now()) return null;
-    return {
-      id: payload.id,
-      email: payload.email,
-      firstName: payload.firstName,
-      lastName: payload.lastName,
-      wage: Number(payload.wage ?? 0),
-    };
-  } catch {
-    return null;
-  }
-}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
